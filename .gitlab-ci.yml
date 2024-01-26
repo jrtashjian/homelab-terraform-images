@@ -1,0 +1,36 @@
+variables:
+  BASE_IMAGE: "alpine:3.19"
+  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+stages:
+  - lint
+  - build
+
+dockerfile check:
+  stage: lint
+  image: hadolint/hadolint:latest-alpine
+  before_script:
+    - hadolint --version
+  script:
+    - hadolint Dockerfile
+
+build terraform:
+  stage: build
+  image: docker:cli
+  services:
+    - docker:dind
+  parallel:
+    matrix:
+      - TERRAFORM_BINARY_VERSION: "1.7.1"
+        TERRAFORM_VERSION: "1.7"
+        ONEPASSWORD_BINARY_VERSION: "2.24.0"
+        ONEPASSWORD_VERSION: "2.24"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build .
+      --build-arg BASE_IMAGE=$BASE_IMAGE
+      --build-arg TERRAFORM_BINARY_VERSION=$TERRAFORM_BINARY_VERSION
+      --build-arg ONEPASSWORD_BINARY_VERSION=$ONEPASSWORD_BINARY_VERSION
+      --tag $DOCKER_IMAGE_NAME
+    - docker push $DOCKER_IMAGE_NAME
