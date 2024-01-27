@@ -54,6 +54,7 @@ release:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
+    - docker pull "$BUILD_IMAGE_NAME"
     - docker tag "$BUILD_IMAGE_NAME" "$RELEASE_IMAGE_NAME:latest"
     - docker push "$RELEASE_IMAGE_NAME:latest"
     - docker tag "$BUILD_IMAGE_NAME" "$CI_REGISTRY_IMAGE/releases/terraform:$TERRAFORM_BINARY_VERSION"
