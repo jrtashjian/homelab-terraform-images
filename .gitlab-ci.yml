@@ -42,8 +42,8 @@ build terraform:
       --build-arg BASE_IMAGE=$BASE_IMAGE
       --build-arg TERRAFORM_BINARY_VERSION=$TERRAFORM_BINARY_VERSION
       --file Dockerfile
-      --tag "$DOCKER_IMAGE_NAME"
-    - docker push "$DOCKER_IMAGE_NAME"
+      --tag "$BUILD_IMAGE_NAME"
+    - docker push "$BUILD_IMAGE_NAME"
 
 release:
   extends: .versions
