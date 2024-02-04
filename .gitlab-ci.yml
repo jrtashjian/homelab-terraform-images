@@ -13,8 +13,6 @@ variables:
         TERRAFORM_VERSION: "1.6"
       - TERRAFORM_BINARY_VERSION: "1.5.7"
         TERRAFORM_VERSION: "1.5"
-      - TERRAFORM_BINARY_VERSION: "1.4.6"
-        TERRAFORM_VERSION: "1.4"
 
 stages:
   - lint
