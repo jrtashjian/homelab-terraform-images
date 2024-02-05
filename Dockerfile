@@ -22,4 +22,7 @@ RUN ( curl -sLo terraform.zip "https://releases.hashicorp.com/terraform/${TERRAF
 
 WORKDIR /
 
+COPY src/bin/gitlab-terraform.sh /usr/bin/gitlab-terraform
+RUN chmod +x /usr/bin/gitlab-terraform
+
 ENTRYPOINT []
