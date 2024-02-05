@@ -1,10 +1,10 @@
 variables:
   BASE_IMAGE: "alpine:3.19"
   BUILD_IMAGE_NAME: "$CI_REGISTRY_IMAGE/branches/$CI_COMMIT_REF_SLUG-$TERRAFORM_VERSION:$CI_COMMIT_SHA"
+  DOCKER_DIND_IMAGE: "docker:25.0-dind"
   RELEASE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/releases/$TERRAFORM_VERSION"
-  STABLE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/stable:latest"
 
-.versions:
+.terraform-versions:
   parallel:
     matrix:
       - TERRAFORM_BINARY_VERSION: "1.7.2"
@@ -28,11 +28,11 @@ dockerfile check:
     - hadolint Dockerfile
 
 build terraform:
-  extends: .versions
+  extends: .terraform-versions
   stage: build
-  image: docker:cli
   services:
-    - docker:dind
+    - "$DOCKER_DIND_IMAGE"
+  image: "$DOCKER_DIND_IMAGE"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
@@ -44,16 +44,14 @@ build terraform:
     - docker push "$BUILD_IMAGE_NAME"
 
 release:
-  extends: .versions
+  extends: .terraform-versions
   stage: release
-  image: docker:cli
   services:
-    - docker:dind
+    - "$DOCKER_DIND_IMAGE"
+  image: "$DOCKER_DIND_IMAGE"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker pull "$BUILD_IMAGE_NAME"
-    - docker tag "$BUILD_IMAGE_NAME" "$RELEASE_IMAGE_NAME:latest"
-    - docker push "$RELEASE_IMAGE_NAME:latest"
     - docker tag "$BUILD_IMAGE_NAME" "$CI_REGISTRY_IMAGE/releases/terraform:$TERRAFORM_BINARY_VERSION"
     - docker push "$CI_REGISTRY_IMAGE/releases/terraform:$TERRAFORM_BINARY_VERSION"
