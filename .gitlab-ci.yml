@@ -7,6 +7,8 @@ variables:
 .terraform-versions:
   parallel:
     matrix:
+      - TERRAFORM_BINARY_VERSION: "1.11.2"
+        TERRAFORM_VERSION: "1.11"
       - TERRAFORM_BINARY_VERSION: "1.7.2"
         TERRAFORM_VERSION: "1.7"
       - TERRAFORM_BINARY_VERSION: "1.6.6"
